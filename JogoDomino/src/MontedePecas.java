@@ -1,8 +1,7 @@
 
 import java.util.ArrayList;
 /**
- * Classe responsável pelo monte de peças seja ele o cemitério ou antes da
- * distribuição;
+ * Classe responsável pelo monte de peças seja ele o cemitério ou antes da distribuição;
  *
  * @author Cleverton
  */
@@ -15,6 +14,9 @@ public class MontedePecas {
         this.inicializaMonte();
     }
 
+    /**
+     * Método responsável por iniciar monte de peças do dominó
+     */
     public void inicializaMonte() {
         monte = new ArrayList();
         for (int i = 0; i <= 6; i++) {

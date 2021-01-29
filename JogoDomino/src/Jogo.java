@@ -18,10 +18,8 @@ public class Jogo {
     private int lado; //Lado do dominó para encaixar peça
 
     /**
-     * Método principal que inicializa o jogo e realiza a chamada das funções do
-     * jogo
-     *
-     * @return
+     * Método principal que inicializa o jogo e realiza a chamada das funções do jogo
+     * @return boolean
      */
     public boolean playGame() {
         //Instancia e cria o monte de peças do dominó
@@ -70,9 +68,11 @@ public class Jogo {
                             if (p1 == p.getPonta1()) {
                                 mesa.add(0, this.giraPeca(p));//Encaixa no começo
                             } else {
-                                System.out.print("Peça escolhida inválida! Escolha outra peça!");
+                                System.out.print("Peça escolhida inválida! Escolha outra peça!\n");
                                 this.vez = 1;
-                                j1.add(p);//Retorna a peça a mão pois não encaixa no jogo!
+                                if (p.getPonta1() != 8) {
+                                    j1.add(p);//Retorna a peça a mão pois não encaixa no jogo!
+                                }
                             }
                         }
                     } else {
@@ -84,25 +84,48 @@ public class Jogo {
                             } else {
                                 System.out.print("Peça escolhida inválida! Escolha outra peça!\n");
                                 this.vez = 1;
-                                j1.add(p);//Retorna a peça a mão pois não encaixa no jogo!
+                                if (p.getPonta1() != 8) {
+                                    j1.add(p);//Retorna a peça a mão pois não encaixa no jogo!
+                                }
                             }
                         }
                     }
                     p1 = mesa.get(0).getPonta1();
                     p2 = mesa.get(mesa.size() - 1).getPonta2();
                 } else {
-                    if (p1 == p.getPonta2()) {
-                        mesa.add(0, p);//Encaixa no começo
-                    } else {
-                        if (p2 == p.getPonta1()) {
-                            mesa.add(p);//Encaixa no final
+                    //Encaixa no começo
+                    if(this.lado != 0){
+                    if (this.lado == 1) {
+                        if (p1 == p.getPonta2()) {
+                            mesa.add(0, p);//Encaixa no começo
                         } else {
-                            //Encaixes com giro na peça para encaixar
                             if (p1 == p.getPonta1()) {
                                 mesa.add(0, this.giraPeca(p));//Encaixa no começo
+                            }
+                        }
+                    }else{
+                        if (p2 == p.getPonta1()) {
+                            mesa.add(p);//Encaixa no fim
+                        } else {
+                            if (p2 == p.getPonta2()) {
+                                mesa.add(this.giraPeca(p));//Encaixa no fim
+                            } 
+                        }
+                    }
+                    }else{ //original
+                        if (p1 == p.getPonta2()) {
+                            mesa.add(0, p);//Encaixa no começo
+                        } else {
+                            if (p2 == p.getPonta1()) {
+                                mesa.add(p);//Encaixa no final
                             } else {
-                                if (p2 == p.getPonta2()) {
-                                    mesa.add(this.giraPeca(p));//Encaixa no final
+                                //Encaixes com giro na peça para encaixar
+                                if (p1 == p.getPonta1()) {
+                                    mesa.add(0, this.giraPeca(p));//Encaixa no começo
+                                } else {
+                                    if (p2 == p.getPonta2()) {
+                                        mesa.add(this.giraPeca(p));//Encaixa no final
+                                    }
                                 }
                             }
                         }
@@ -285,13 +308,12 @@ public class Jogo {
 
     /**
      * Retorna peça de encaixe conforme escolha do computador ou do jogador
-     * //CHAMAR MÉTODOS DE IA
-     *
+     * Chama também o método de IA para escolha de uma peça
      * @param p1
      * @param p2
      * @return Peça de encaixe no jogo
      */
-    public Peca retornaPecaEncaixe(int p1, int p2) { ///DEVERÁ SETAR O LADO EM QUE SE JOGA E A PEÇA A SER JOGADA
+    public Peca retornaPecaEncaixe(int p1, int p2) {
         Peca p;
         if (vez == 1) {
             System.out.print("SUA MÃO: ");
@@ -303,7 +325,7 @@ public class Jogo {
             Scanner read = new Scanner(System.in);
             System.out.println("Digite o número da peça escolhida entre 1 e " + j1.size() + ", ou 0 caso tem que comprar na pilha!");
             String escT = read.nextLine();
-            if (escT.matches("[0-7]")==true) {
+            if (escT.matches("[0-" + j1.size() + "]") == true) {
                 int esc = Integer.parseInt(escT);
                 if (esc != 0) {
                     System.out.println("Digite o lado na mesa que vai jogar a peça!");
@@ -326,25 +348,36 @@ public class Jogo {
                 }
             } else {
                 //Retorna peça fora do intervalo pois o valor escolhido não pertence ao dominó
-                
                 this.vez = 2;
-                return p = new Peca(8,8);
+                return p = new Peca(8, 8);
             }
             this.vez = 2;
             this.fim++;
         }
-        if (vez == 2) { ///Passar a mesa como parâmetro e a mão do computador e chamar método que monta árvore de busca, e as pontas do jogo
+        if (vez == 2) {
             BuscaIA b = new BuscaIA(mesa, j2, p1, p2);
-            b.IA();
-            int k = j2.size();
-            for (int i = 0; i < k; i++) {
-                if (j2.get(i).getPonta1() == p1 || j2.get(i).getPonta2() == p1 || j2.get(i).getPonta1() == p2 || j2.get(i).getPonta2() == p2) {
-                    p = j2.get(i);
-                    j2.remove(i);
-                    this.vez = 1;
-                    return p;
+            p = b.IA();
+            if (p != null) {
+                this.lado = b.ladoEncaixe;
+                this.vez = 1;
+                for (int i = 0; i < j2.size(); i++) {
+                    if(j2.get(i).getPonta1() == p.getPonta1()&& j2.get(i).getPonta2() == p.getPonta2()|| j2.get(i).getPonta1() == p.getPonta2()&& j2.get(i).getPonta2() == p.getPonta1()){
+                        j2.remove(i);
+                    }
                 }
+                return p;
+            }else{
+                this.lado = 0;//Caso compra do monte encaixa aleatóriamente no dominó
             }
+//            int k = j2.size();
+//            for (int i = 0; i < k; i++) {
+//                if (j2.get(i).getPonta1() == p1 || j2.get(i).getPonta2() == p1 || j2.get(i).getPonta1() == p2 || j2.get(i).getPonta2() == p2) {
+//                    p = j2.get(i);
+//                    j2.remove(i);
+//                    this.vez = 1;
+//                    return p;
+//                }
+//            }
             while (m.getMonte().size() > 0) {
                 j2.add(m.compraPeca());
                 int j = j2.size() - 1;

@@ -1,18 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
+ * Classe responsável por implementar a estrutura de uma peça de dominó
  *
  * @author Cleverton
  */
 public class Peca {
+
     private int ponta1;
     private int ponta2;
-    
-    public Peca(int p1, int p2){
+
+    public Peca(int p1, int p2) {
         this.ponta1 = p1;
         this.ponta2 = p2;
     }
@@ -32,10 +29,10 @@ public class Peca {
     public void setPonta2(int ponta2) {
         this.ponta2 = ponta2;
     }
-    
+
     @Override
     public String toString() {
         return "Peca{" + "ponta1=" + ponta1 + ", ponta2=" + ponta2 + '}';
     }
-    
+
 }
